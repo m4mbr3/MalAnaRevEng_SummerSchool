@@ -1,0 +1,30 @@
+Topics of Malware Reverse Engineering
+
+1 Crash course on x86 (AI 80x86 structure register&flags, syntax at6t intel, basic instruction set)  
+
+2 Function and call convenction
+
+3 Some knowledge about x86_64 (differences with 80x86)
+
+4 How the program is seen in memory 
+
+5 What we need (with Section for windows tools and linux tools)
+	-IDA PRO (free version is 5.0)
+	-OllyGdb
+	-gdb
+	-hex editor (such as ghex2)
+	-file
+	-PEID
+	-ldd
+	-objdump
+	-otool
+	-dumpbin
+	-strings
+	-nasm
+	-boch
+	-text editor(vim,notepad++,emacs)
+	-gcc, g++, devc++ 	
+	-others
+6 Methodology to reverse malware
+
+ 
