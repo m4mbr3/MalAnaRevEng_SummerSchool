@@ -1,0 +1,348 @@
+\documentclass[]{beamer}
+% Class options include: notes, notesonly, handout, trans,
+%                        hidesubsections, shadesubsections,
+%                        inrow, blue, red, grey, brown
+
+% Theme for beamer presentation.
+\usepackage{beamerthemesplit} 
+% Other themes include: beamerthemebars, beamerthemelined, 
+%                       beamerthemetree, beamerthemetreebars  
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+  \oldmacro\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+\title{Malware Analysis And Reversing Engineering}    % Enter your title between curly braces
+\author{Andrea Mambretti (andrea2.mambretti@mail.polimi.it)}        % Enter your name between curly braces
+\institute{Politecnico di Milano}      % Enter your institute name between curly braces
+\date{\today}                    % Enter the date or \today between curly braces
+
+\begin{document}
+
+% Creates title page of slide show using above information
+\begin{frame}
+  \titlepage
+\end{frame}
+\note{Talk for 50 minutes} % Add notes to yourself that will be displayed when
+                           % typeset with the notes or notesonly class options
+
+\section[Outline]{}
+
+% Creates table of contents slide incorporating
+% all \section and \subsection commands
+\begin{frame}
+  \tableofcontents
+\end{frame}
+
+\section {Who am I?}
+	\subsection {Education}
+		\begin{frame}
+			\frametitle{Education}
+			\begin{itemize}
+				\item { In 2008 I received my high school diploma in Information Technology} 
+				\item { In 2011 I received my bechelor degree in Computer Science Engineering @POLIMI}
+				\item { I'm a Master of Science student in Computer Science Engineering @POLIMI}
+			\end{itemize}
+		\end{frame}
+	\subsection {Interests}
+		\begin{frame}
+			\frametitle{Interests}
+			\begin{itemize}
+				\item { I'm mainly interest in Security (Malware Analysis, Reversing Engineering, Exploiting and other low level stuff) and in Hacking Operative System (Linux and FreeBSD kernel)}
+				\item { I'm in the security team of Profs Maggi/Zanero for my master thesis in Automatic labeling behaviour system for malware }
+				\item { I'm a component of the CTF team of polimi}  
+			\end{itemize}
+		\end{frame}
+
+\section {Overview on Malware}
+	\subsection {What is Malware?}
+	
+		\begin{frame}
+  			\frametitle{What is Malware?}   % Insert frame title between curly braces
+
+  			\begin{block}{Definitions}
+				\begin{itemize}
+ 					\item { A Malware is any program that works against the interests of the system's user or owner}
+  					\item { “Malware” is short for “malicious software” - computer programs designed to infiltrate and damage computers without the users consent. “Malware” is the general term covering all the different types of threats to your computer safety }
+				\end{itemize}
+  			\end{block}
+			\begin{block}{Which are the targets?}
+				\begin{itemize}
+					\item {Actually everyone can be a target indipendently from the Operative System they run!!!}
+					\item {But Windows users (again the majority sadly) are the most exposed }
+				\end{itemize}
+			\end{block} 
+		\end{frame}
+%\note[enumerate]       % Add notes to yourself that will be displayed when
+%{                      % typeset with the notes or notesonly class options
+%\item cit from \"Secrets of reverse Engineering\"
+%\item Note for Point 2   
+%}
+	\subsection {Taxonomy}
+
+		\begin{frame}
+  			\frametitle{Taxonomy}
+			
+			\begin{itemize}
+				\item {Viruses}
+				\item {Worms}
+				\item {Trojan Horses}
+				\item {Backdoors}
+				\item {Mobile Code}
+				\item {Adware/Spyware}
+				\item {Rootkit}
+				\item {Botnet}
+				\item {Downloader and/or Launcher}
+				\item {Future Malware (such as Information-Stealing Worms and BIOS/Firmware Malware)}
+			\end{itemize}
+		\end{frame}
+	
+	\subsection {What is Malware used for?}
+
+		\begin{frame}
+  			\frametitle{What is Malware used for?}
+			
+			\begin{itemize}
+				\item {Backdoor Access}
+				\item {Denial of Service (DoS) Attack}
+				\item {Vandalism}
+				\item {Resource Theft}
+				\item {Information Theft}
+			\end{itemize}
+		\end{frame}
+
+\section {Overview on the Analysis Techniques }
+	\subsection{Basic static Analysis}
+		\begin{frame}
+			\frametitle{What is Basic Static Analysis?}
+			
+			\begin{itemize}
+				\item {B.S.A. consists in a very simple set of operation that can allow a malware analyst to get usefull information about a certain binary file}
+				\item {B.S.A. tools can give us infomation about:}
+				\begin{itemize}
+					\item{\textbf{Antivirus Scanning}: tell us if it is an already known malware or not and if yes which kind (ex www.virustotal.com) }
+					\item{\textbf{Hashing}: tell if a certain file has been corrupted or not}
+					\item{\textbf{Strings}: give us all the strings defined as costant in the program that can be usefull to undestand what that file does}
+					\item{\textbf{Recognizers Packing and Obfuscation}: if the file uses some type of packing (ex: upx) or obfuscation to avoid recognition} 
+					\item{\textbf{Header Analysis}: Looking inside the header give us information about import and export function, when it's compiled, if it's packet, if there's some extra segment and other stuff }
+				\end{itemize}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{When is it necessary?}
+			\begin{itemize}
+				\item {If someone is really paranoic the answer is every time before launch  an application }
+				\item {for all the others when something of suspicious is detected during the previous execution}
+				\item {after this phase a human analyzer knows if it is needed to procede with other analysis such as dynamic and advaced static analysis}
+			\end{itemize}	
+		\end{frame}
+
+	\subsection{Dynamic Analysis}
+		\begin{frame}
+			\frametitle{What is Dynamic Analysis?}
+			\begin{itemize}
+				\item {D.A. consists in  looking the behaviour of a malware running it and loggin every change and action done in the system}
+				\item {of course is not always possible use this technique because a specific malware can damage the system and makes the information unreachable}
+				\item {so what can we do to avoid it?}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Possible Solution: Virtual Machine}
+			\begin{itemize}
+				\item {Using Virtual Machine we can set a perfect enviroment for our malware (fake a whole network of hosts,logger etc. )}
+				\item {We can check out of box what happens inside (system call, network operation etc.).\newline
+					if something goes wrong we can, using snapshots, rollback the machine state to a sane position					    }
+				\item {Possible sequence of operation:}
+					\begin{itemize}
+						\item{Start with a clean snapshot with no malware running on it}
+						\item{Trasfer the malware to the virtual machine}
+						\item{Conduct your analysis on the virtual machine}
+						\item{Take your notes, screenshots, and data from the virtual machine and transfer it to the physical machine}
+						\item{Revert the virtual machine to the clean snapshot}			
+					\end{itemize}	
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Existing VM}
+			\begin{block}{VM}
+				Someone of them are already prepared to Malware Analysis	
+				\begin{itemize}
+					\item{VMware}
+					\item{VirtualBox}
+					\item{Qemu}
+					\item{Cuckoo}
+					\item{Anubis}
+					\item{Andrubis}
+					\item{A ton of others}
+				\end{itemize}
+			\end{block}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Problems and Solution}
+			\begin{block}{Problems}
+				\begin{itemize}
+					\item{It's prooved Today's Malware can avoid the dynamic analysis. They recognize all the well-know VB and they change their behavior when are runned in }
+					\item{The worst scenario happens when specific malware are done to exploit vulnerabilities inside VM to own the whole machine where the VB is running}
+				\end{itemize}
+			\end{block}
+			\begin{block}{Solution}
+				\begin{itemize}
+					\item{One of the possible solution to understand if the malware has behaved not in his standard way and which are his possibility is to see the code more deeply with the Advanced Static Analysis (aka Reverse Engineering) }
+				\end{itemize}
+			\end{block}
+		\end{frame}
+
+	\subsection{Advanced Static Analysis}
+		\begin{frame}
+			\frametitle{What is Reverse Engineering in General?}
+			
+			\begin{block}{Definition}
+				\begin{itemize}
+					\item{Reverse engineering is taking apart an object to see how it works in order to duplicate or enhance the object. The practice, taken from older industries, is now frequently used on computer hardware and software.}
+					\item{Reverse engineering is usually conducted to obtain missin knowledge, ideas, adn design philosophy when such information is unavailable}
+				\end{itemize}
+			\end{block}
+		\end{frame}	
+		\begin{frame}	
+			\frametitle{What is Software reverse engineering?}
+			\begin{block}{Definition}
+				\begin{itemize}
+					\item{Software reverse engineering involves reversing a program's machine code (the string of 0s and 1s that are sent to the logic processor) back into the assembly language (x86, x86-64, ARM so on and so forth) }
+					\item{Software reverse engineering requires a combination of skills and a thorough undestanding of computers and software development, but like most worthwhile subjects, the only real prerequisite is a strong curiosity and desire to learn. Software reverse engineering integrates several arts: code breaking, puzzle solving, programming, and logical analysis.}
+				\end{itemize}
+			\end{block}
+		\end{frame}
+		\begin{frame}
+			\frametitle{When do we use it?}
+			\begin{itemize}
+				\item{Reversing Application}
+				\item{Security-Related Reversing}
+					\begin{itemize}
+						\item{Malicious Software}
+						\item{Reversing Cryptographic Algorithms}
+						\item{Digital Rights Management}
+						\item{Auditing Program Binaries}
+					\end{itemize}
+				\item{Reversing Software Development}
+					\begin{itemize}
+						\item{Achieving Interoperability with Proprietary Software}
+						\item{Developing Competing Software}
+						\item{Evaluating Software Quality and Robustness}
+					\end{itemize}
+			\end{itemize}			
+		\end{frame}
+		\begin{frame}
+			\frametitle{Background of a good Reverser}
+			\begin{itemize}
+				\item{Assembly Language}
+				\item{Compilers}
+				\item{Virtual Machine and Bytecodes (ex Java)}
+				\item{Operative Systems}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Tools of a good Reverser}
+				\begin{itemize}
+					\item{System-Monitoring Tools}
+					\item{Disassemblers}
+					\item{Debuggers}
+					\item{Decompilers}
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Some Common Reversing Tools}
+			\begin{itemize}
+				\item{IDA Pro}
+				\item{OllyDbg}
+				\item{WinDbg}
+				\item{PEBrowse Professional Interactive}
+				\item{SoftICE}
+			\end{itemize}
+		\end{frame}
+
+		\begin{frame}
+			\frametitle{Is it Legal?}
+			\begin{itemize}
+				\item{The Legal debate around reverse engineering has been going on for years}
+				\item{1998 -  Digital Millenium Copyright Act}
+					\begin{itemize}
+						\item{Circumvention of copyright protection systems}
+						\item{The development of circumvention technologies}
+					\end{itemize}
+				\item{Luckily, DMCA makes several exceptions}
+					\begin{itemize}
+						\item{Interoperability}
+						\item{Encryption research}
+						\item{Security testing}
+						\item{Educational institutions and public libraries}
+						\item{Government investigation}
+						\item{Regulation}
+						\item{Protection of privacy}
+					\end{itemize}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Reverse on Malware and Antireversing Techniques}
+			Today's malware and commercial program use techniques against Reversing
+			\begin{itemize}
+				\item{Anti-Disassembly (Linear and Flow Oriented Disassembly)}
+					\begin{itemize}
+						\item{Jump instructions with the same target}
+						\item{Jump instruction with a Costant Condition}
+						\item{Impossible disassembly}
+					\end{itemize}
+				\item{Anti-Debugging}
+					\begin{itemize}
+						\item{They understand that are executed in a debugger and change their behaviour either crashing itself, the debugger or totally doing other stuff}
+					\end{itemize}
+				\item{Anti-Virtual Machine Techniques}
+				\item{Packers and Unpacking}
+			\end{itemize}
+		\end{frame}
+	 	\begin{frame}
+			\frametitle{Conclusion}
+			\begin{itemize}
+				\item{Software Reverse Engineering is a very powerfull instrument but it requires a lot of lowlevel-knowledge }
+				\item{Appling this technique on malware analysis is not optional if we want undestand how the malware works}
+				\item{Can be very time consuming and if all the tools used for the analysis are not setted correctly there's no way to reverse the malware }
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{End}
+			\begin{itemize}
+				\item{Thanks Folk...Questions?}
+				\item{So now one practical example}
+			\end{itemize}
+		\end{frame}
+%\begin{frame}
+%  \frametitle{Simple slide with three points shown in succession}   % Insert frame title between curly braces
+
+%  \begin{itemize}
+%  \item<1-> Point 1 (Click ``Next Page'' to see Point 2) % Use Next Page to go to Point 2
+%  \item<2-> Point 2  % Use Next Page to go to Point 3
+%  \item<3-> Point 3
+%  \end{itemize}
+%\end{frame}
+%\note{Speak clearly}  % Add notes to yourself that will be displayed when
+                      % typeset with the notes or notesonly class options
+
+
+
+%\begin{frame}
+ % \frametitle{Slide with two columns: items and a graphic}   % Insert frame title between curly braces
+  %\begin{columns}[c]
+ % \column{2in}  % slides are 3in high by 5in wide
+ % \begin{itemize}
+ %\item<1-> First item
+ % \item<2-> Second item
+ % \item<3-> ...
+ % \end{itemize}
+ % \column{2in}
+ % \framebox{Insert graphic here % e.g. \includegraphics[height=2.65in]{graphic}
+ % }
+ % \end{columns}
+%\end{frame}
+%\note{The end}       % Add notes to yourself that will be displayed when
+		     % typeset with the notes or notesonly class options
+
+\end{document}
