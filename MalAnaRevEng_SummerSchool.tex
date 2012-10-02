@@ -5,6 +5,27 @@
 
 % Theme for beamer presentation.
 \usepackage{beamerthemesplit} 
+\usepackage{tabularx}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{subfig}
+\makeatletter
+
+\def\hlinewd#1{%
+\noalign{\ifnum0=`}\fi\hrule \@height #1 %
+\futurelet\reserved@a\@xhline}
+\makeatother
+
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}} 
 % Other themes include: beamerthemebars, beamerthemelined, 
 %                       beamerthemetree, beamerthemetreebars  
 \newcommand{\tab}{\hspace*{2em}}
@@ -35,15 +56,15 @@
   \tableofcontents
 \end{frame}
 \section {Crash course on Assembly Language }
-	\subsection{An overview on the common 32bit Inter Architecture (IA)}
+	\subsection{An overview on the common 32-bit Intel Architecture (IA)}
 		\begin{frame}
 			\frametitle{(1) How is the IA made?}
 			\begin{itemize}
 				\item{The processor has 32 bits internal registers to manage and to execute operations on data\newline They are EAX,EBX,ECX,EDX,ESI,EDI,EBP,EIP and ESP }
-				\item{Among them we identify EAX,EBX,ECX,EDX that are used by the operations}
-				\item{EBP (BP = base pointer) and ESP ( SP = stack pointer) are the stack bounds }
-				\item{EDI and ESI are extraregisters}
-				\item{EIP is the register that contains the next instruction has to be execute}
+				\item{Among them we identify EAX,EBX,ECX,EDX that are used for general purpose}
+				\item{EBP (BP = base pointer) and ESP (SP = stack pointer) are the stack bounds }
+				\item{EDI and ESI are extra-registers}
+				\item{EIP (IP = instruction pointer) is the register that contains the address of the next instruction has to be execute}
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
@@ -57,26 +78,26 @@
 				\end{column}
 				\begin{column}[right]{2.5in}
 					\begin{itemize}
-						\item{NB: The name is a porting from 16 bits Intel Architecture where the registers were called AX,BX and so on.\newline We can use it also in 32 bits assembly language calling them without the "E"\newline There's also the possibility to use AX,BX,CX,DX such as 8 bits registers for example we can use AX as AH and AL that mean higher and lower 8 bits of AX}
+						\item{The register name system is a porting from 16-bit IA where the registers were called AX,BX and so on.\newline We can use it also in 32-bit world calling them without the "E" (extended)\newline There's also the possibility to use AX,BX,CX,DX such as 8-bit registers for example we can use AX as AH and AL that mean higher and lower 8 bits of AX}
 					\end{itemize}
 				\end{column}
 			\end{columns}
 		\end{frame}
 		\begin{frame}
-			\frametitle{(1)What about EFLAGS?}
+			\frametitle{(1) What about EFLAGS?}
 			\begin{figure}
 				\includegraphics[height=2.5in]{images/eflags.jpeg}
 				\label{Eflags idea}
 			\end{figure}
 		\end{frame}
 		\begin{frame}
-			\frametitle{(2)What about EFLAGS?}
+			\frametitle{(2) What about EFLAGS?}
 			\begin{itemize}
-				\item{It's another 32 bit register}
+				\item{It's another 32-bit register}
 				\item{Only 8 bits on 32 are of interest to us. The others are either for the kernel mode function or  are of little interest for programmer}
 				\item{The 8 bits are called flags. We consider them singularly. They are boolean (true/false) }
-				\item{The meaning of each bit is different. They represent Overflow, Direction, interrupt disable, sign, zero, auxiliary carry, parity and carry flags}
-				\item{For each instruction executed by the processor they change and represent the information about the last instruction. They are VERY important for the control flow of the program }				
+				\item{The meaning of each bit is different. They represent Overflow, Direction, Interrupt Disable, Sign, Zero, Auxiliary Carry, Parity and Carry Flags}
+				\item{For each instruction executed by the processor they change and represent the information about the last instruction executed. They are VERY important for the control flow of the program }				
 			\end{itemize}
 		\end{frame}
 	\subsection{Syntaxes overview}
@@ -89,7 +110,7 @@
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
-			\frametitle{(1)Differences in the notation}
+			\frametitle{(1) Differences in the notation}
 			\begin{itemize}
 				\item{Consider the following operation:\newline\centerline{"move the value 0 to EAX"}}
 				\item{AT\&T: \centerline{ mov \$0x0,\%eax} }
@@ -102,7 +123,7 @@
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
-			\frametitle{(2)Differences in the notation}
+			\frametitle{(2) Differences in the notation}
 			\begin{itemize}
 				\item{Consider this other operation:\newline\centerline {"move the value 0 to the address contained in EBX+4"}}
 				\item{AT\&T: \centerline{ mov \$0x0,0x4(\%ebx)}}
@@ -115,176 +136,407 @@
 				\end{itemize}
 			\end{itemize}
 		\end{frame}
+	\subsection{Let's look to the basic instructions}
 		\begin{frame}
-			\frametitle{(1)Basic Instructions overview}
+			\frametitle{(1) Basic Instructions overview}
 				\begin{itemize}
 					\item{Every processor has a very huge number of instructions to execute (see Intel Manual\footnote{\url{http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html}})}
 					\item{A subset of the whole instructions set is usually dipendent by the considered processor}
-					\item{We will focus on the other subset of instructions that is common among all the processos}
+					\item{We will focus on the other subset of instructions that is common among all the processors}
 					\item{We will use the Intel syntax to see them because is the same syntax used in IDApro by default}
 				\end{itemize}
 		\end{frame}
 		\begin{frame}
-			\frametitle{(2)Basic Instruction MOV}
-				\begin{itemize}
+			\frametitle{(2) Basic Instruction MOV}
+				\begin{itemize}	
+					\item{ General: MOV \underline{\textbf{destination}}, \underline{\textbf{source}}}\\
+					\textbf{source} can be an immediate, a register, a memory location\\
+					\textbf{destination} can be either a register  or a memory location\\
+					NB: Every combination is possible except memloc to memloc!!!It isn't valid here and in all the instructions!!!
+
 					\item{With this instruction, as said in the example above, we move a value from a source place to a destination. There are a ton of different versions. They change in function of the operands ex 32 bits operands, 16 bits operands, immediate to reg, immediate to memory }
-					\item{ General: MOV \underline{\textbf{destination}}, \underline{\textbf{source}}\\
-						\textbf{source} can be an immediate, a register, a memory location\\
-						\textbf{destination} can be either a register  or a memory location\\
-						NB: Every combination is possible except memloc to memloc!!!}
-					\item{Examples}
-						\begin{columns}
-							\begin{column}[left]{1.7in}
-								\begin{itemize}
-									\item{MOV eax, ebx}
-									\item{MOV eax, FFFFFFFFh}
-								\end{itemize}
-							\end{column}
-							\begin{column}[center]{1.5in}
-								\begin{itemize}
-									\item{MOV ax, bx}
-									\item{MOV [eax], ecx}
-								\end{itemize}
-							\end{column}
-							\begin{column}[right]{2in}
-								\begin{itemize}
-									\item{MOV [eax],[ecx]  NO!!!}
-									\item{MOV al, FFh}
-								\end{itemize}
-							\end{column}
-						\end{columns}
-				\end{itemize}
-		\end{frame}
-		\begin{frame}
-			\frametitle{(3)Basic Instruction ADD}
-			\begin{itemize}
-				\item{With this instruction we can add a value from \textbf{source}  to the destination operand and put the new value inside one of the two operands}
-				\item{General: ADD \underline{\textbf{destination}}, \underline{\textbf{source}}\\
-					\textbf{source}}
-			\end{itemize}
-		\end{frame}
-\section {Overview on the Analysis Techniques }
-	\subsection{Basic static Analysis}
-		\begin{frame}
-			\frametitle{What is Basic Static Analysis?}
-			
-			\begin{itemize}
-				\item {B.S.A. consists in a very simple set of operation that can allow a malware analyst to get usefull information about a certain binary file}
-				\item {B.S.A. tools can give us infomation about:}
-				\begin{itemize}
-					\item{\textbf{Antivirus Scanning}: tell us if it is an already known malware or not and if yes which kind (ex www.virustotal.com) }
-					\item{\textbf{Hashing}: tell if a certain file has been corrupted or not}
-					\item{\textbf{Strings}: give us all the strings defined as costant in the program that can be usefull to undestand what that file does}
-					\item{\textbf{Recognizers Packing and Obfuscation}: if the file uses some type of packing (ex: upx) or obfuscation to avoid recognition} 
-					\item{\textbf{Header Analysis}: Looking inside the header give us information about import and export function, when it's compiled, if it's packet, if there's some extra segment and other stuff }
-				\end{itemize}
-			\end{itemize}
-		\end{frame}
-		\begin{frame}
-			\frametitle{When is it necessary?}
-			\begin{itemize}
-				\item {If someone is really paranoic the answer is every time before launch  an application }
-				\item {for all the others when something of suspicious is detected during the previous execution}
-				\item {after this phase a human analyzer knows if it is needed to procede with other analysis such as dynamic and advaced static analysis}
+				\item{Examples}
+					\begin{table}[h]
+						\begin{tabular}{|c|c|c|}
+							\hline
+							MOV eax, ebx&MOV eax, FFFFFFFFh &MOV ax, bx\\    \hline
+							MOV [eax],ecx&MOV [eax],[ecx] \color{red}NO!!!&MOV al, FFh\\
+							\hline
+						\end{tabular}
+					\end{table}
 			\end{itemize}	
-		\end{frame}
 
-	\subsection{Dynamic Analysis}
+		\end{frame}
 		\begin{frame}
-			\frametitle{What is Dynamic Analysis?}
+			\frametitle{(3) Basic Instruction ADD}
 			\begin{itemize}
-				\item {D.A. consists in  looking the behaviour of a malware running it and loggin every change and action done in the system}
-				\item {of course is not always possible use this technique because a specific malware can damage the system and makes the information unreachable}
-				\item {so what can we do to avoid it?}
+					\item{General: ADD \underline{\textbf{destination}}, \underline{\textbf{source}}}\\
+					\textbf{source} can be an immediate, a register, a memory location\\
+					\textbf{destination} can be either a register or a memory location\\
+					NB: The destination register has to be as big as at least the source or greater 
+					\item{With this instruction we can add a value from \textbf{source}  to the destination operand and put the new value inside the destination}
+					\item{Examples}
+					\begin{table}[h]
+						\begin{tabular}{|c|c|c|}
+							\hline
+							ADD esp, 44h&ADD eax, ebx&ADD al, dh\\
+							\hline
+							ADD  edx, cx&ADD [eax],[ecx] \color{red}NO!!!&ADD [eax],1h\\
+							\hline
+						\end{tabular}
+					\end{table}
+
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
-			\frametitle{Possible Solution: Virtual Machine}
+			\frametitle{(4) Basic Instruction SUB}
 			\begin{itemize}
-				\item {Using Virtual Machine we can set a perfect enviroment for our malware (fake a whole network of hosts,logger etc. )}
-				\item {We can check out of box what happens inside (system call, network operation etc.).\newline
-					if something goes wrong we can, using snapshots, rollback the machine state to a sane position					    }
-				\item {Possible sequence of operation:}
-					\begin{itemize}
-						\item{Start with a clean snapshot with no malware running on it}
-						\item{Trasfer the malware to the virtual machine}
-						\item{Conduct your analysis on the virtual machine}
-						\item{Take your notes, screenshots, and data from the virtual machine and transfer it to the physical machine}
-						\item{Revert the virtual machine to the clean snapshot}			
-					\end{itemize}	
+				\item{General: SUB \underline{\textbf{destination}}, \underline{\textbf{source}}}\\
+				\textbf{source} can be an immediate, a register, a memory location\\
+				\textbf{destination} can be either a register or a memory location\\
+					NB: The destination register has to be as big as at least the source or greater 
+				\item{With this instruction we can subtract the value \textbf{source}  from the destination operand and put the new value inside the destination}
+
+				\item{Examples}
+					\begin{table}[h]
+						\begin{tabular}{|c|c|c|}
+							\hline
+							SUB esp, 33h&SUB eax, ebx&SUB al, dh\\
+							\hline
+							SUB edx, cx&SUB [eax],[ecx] \color{red}NO!!!&SUB [eax],1h\\
+							\hline
+						\end{tabular}
+					\end{table}
+
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
-			\frametitle{Existing VM}
-			\begin{block}{VM}
-				Someone of them are already prepared to Malware Analysis	
-				\begin{itemize}
-					\item{VMware}
-					\item{VirtualBox}
-					\item{Qemu}
-					\item{Cuckoo}
-					\item{Anubis}
-					\item{Andrubis}
-					\item{A ton of others}
-				\end{itemize}
-			\end{block}
-		\end{frame}
-		\begin{frame}
-			\frametitle{Problems and Solution}
-			\begin{block}{Problems}
-				\begin{itemize}
-					\item{It's prooved Today's Malware can avoid the dynamic analysis. They recognize all the well-know VB and they change their behavior when are runned in }
-					\item{The worst scenario happens when specific malware are done to exploit vulnerabilities inside VM to own the whole machine where the VB is running}
-				\end{itemize}
-			\end{block}
-			\begin{block}{Solution}
-				\begin{itemize}
-					\item{One of the possible solution to understand if the malware has behaved not in his standard way and which are his possibility is to see the code more deeply with the Advanced Static Analysis (aka Reverse Engineering) }
-				\end{itemize}
-			\end{block}
+			\frametitle{(5) Basic Instruction MUL}
+			\begin{itemize}
+				\item{General: MUL \underline{\textbf{Operand}}}\\
+				\textbf{Operand} can be an immediate, a register, a memory location\\
+
+				\item{With this instruction we can multiplies \textbf{Operand} by the value of corresponding byte-length in the EAX,AX,AL register }
+					\begin{table}[h]
+						\begin{tabular}{|c!{\vrule width 1pt}c|c|c| }
+							\hline
+							OperandSize:& 1 byte & 2 bytes& 4 bytes\\	\hlinewd{1.3pt}
+							Other Operand& AX     & DX:AX   & EDX:EAX\\	\hline
+							Higher Part of result: & AH & DX & EDX\\		\hline
+							Lower Part of result:  & AL & AX & EAX\\
+							\hline
+						\end{tabular}
+					\end{table}
+
+					\item{Examples}
+					\begin{table}[h]	
+						\begin{tabular}{|c!{\vrule width 1pt}c|c|c|}
+							\hline
+							OperandSize:&1 byte & 2 bytes & 4 bytes\\ \hlinewd{1.3pt}
+
+							Immediate&MUL 44h & MUL 4455h & MUL 44556677h\\ \hline
+							Register&MUL cl & MUL dx & MUL ebx \\
+							\hline
+						\end{tabular}
+					\end{table}
+			\end{itemize}
 		\end{frame}
 
-	\subsection{Advanced Static Analysis}
 		\begin{frame}
-			\frametitle{What is Reverse Engineering in General?}
+			\frametitle{(6) Basic Instruction DIV}
+			\begin{itemize}	
+				\item{General: DIV \underline{\textbf{Operand}}}\\
+				\textbf{Operand} can be an immediate, a register, a memory location
+
+				\item{With this instruction we can divide the value in the dividend register(s) by "Operand"}
+					\begin{table}[h]
+						\begin{tabular}{|c!{\vrule width 1pt}c|c|c| }
+							\hline
+							OperandSize: & 1 byte & 2 bytes & 4 bytes\\	\hlinewd{1.3pt}
+							Dividend     & AX     & DX:AX   & EDX:EAX\\	\hline
+							Remainder  & AH & DX & EDX\\		\hline
+							Quotient  & AL & AX & EAX\\							\hline
+						\end{tabular}
+					\end{table}
+					\item{Examples}
+					\begin{table}[h]	
+						\begin{tabular}{|c!{\vrule width 1pt}c|c|c|}
+							\hline
+							OperandSize:&1 byte & 2 bytes & 4 bytes\\ \hlinewd{1.3pt}
+							Register&DIV bl & DIV bx & DIV ebx\\ \hline
+							Immediate&DIV 66h & DIV 6677h & DIV 66778899h \\
+							\hline
+						\end{tabular}
+					\end{table}
+			\end{itemize}
+		\end{frame}
+
+		\begin{frame}
+			\frametitle{(7) Basic Instruction CMP}
+			\begin{itemize}
+				\item{General: CMP \underline{\textbf{Operand\_1}}, \underline{\textbf{Operand\_2}}}\\
+
+				\item{This instruction performs a subtraction between two operands and sets  the flags, it doesn't store the result}
+				\item{Examples}
+					\begin{table}[h]
+						\begin{tabular}{|c|c|c|}
+							\hline
+							CMP eax, ebx&CMP eax, 44BBCCDDh&CMP al, dh\\
+							\hline
+							CMP al, 44h&CMP ax,FFFFh&CMP [eax],4h\\
+							\hline
+						\end{tabular}
+					\end{table}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{(8) Basic Instruction JMP}
+				\begin{columns}
+					\begin{column}[left]{2.5in}
+						\begin{figure}
+							\includegraphics[width=\textwidth]{images/jmp.eps}
+							
+							\label{Control Flow JMP}
+						\end{figure}
+					\end{column}
+					\begin{column}[right]{2.5in}
+						\begin{itemize}	
+							\item{General: JMP \underline{\textbf{address}}}\\
+
+							\item{This instruction is called unconditional jump and when is executed put in the eip (the next instruction address) the \textbf{address} passed as operand. We say that the execution jumps to \textbf{address} and it's unconditional because always the execution jump.}
+						\end{itemize}
+
+					\end{column}
+				\end{columns}
+		\end{frame}
+		\begin{frame}
+			\frametitle{(9) Basic Instruction JZ,JNZ and so on}
+				\begin{columns}
+					\begin{column}[left]{2.5in}
+						\begin{figure}
+							\includegraphics[width=\textwidth]{images/j_unc.eps}									      \label{control}
+							\label{Control Flow JZ}
+						\end{figure}
+					\end{column}
+					\begin{column}[right]{2.5in}
+						\begin{itemize}
+							\item{General: JX \underline{\textbf{address}}}\\
+							$ X \in \{O,NO,S,NS,E,Z,NE...\}$\\
+							\item{This set of instruction are called conditional jump. It means that the execution will go to \textbf{address} if and only if the specific flag of the condition jump given is verified.\\For example: jz jumps if zero flag is 1 if no is not taked}						\end{itemize}
+					\end{column}\footnote{\url{http://www.unixwiz.net/techtips/x86-jumps.html}}
+
+				\end{columns}
+		\end{frame}
+		\begin{frame}
+			\frametitle{(10) Basic Instruction INT}
+				\begin{itemize}
+					\item{General: INT \underline{\textbf{VALUE}}}\\
+					\item{\textbf{VALUE} is the software interrupt that should be generated (0-255)}
+					\item{Famous values are 21h for call service under windows and 80 for linux}
+					\item{look the manual for the other } 
+				\end{itemize}
+		\end{frame}
 			
-			\begin{block}{Definition}
-				\begin{itemize}
-					\item{Reverse engineering is taking apart an object to see how it works in order to duplicate or enhance the object. The practice, taken from older industries, is now frequently used on computer hardware and software.}
-					\item{Reverse engineering is usually conducted to obtain missin knowledge, ideas, adn design philosophy when such information is unavailable}
-				\end{itemize}
-			\end{block}
-		\end{frame}	
-		\begin{frame}	
-			\frametitle{What is Software reverse engineering?}
-			\begin{block}{Definition}
-				\begin{itemize}
-					\item{Software reverse engineering involves reversing a program's machine code (the string of 0s and 1s that are sent to the logic processor) back into the assembly language (x86, x86-64, ARM so on and so forth) }
-					\item{Software reverse engineering requires a combination of skills and a thorough undestanding of computers and software development, but like most worthwhile subjects, the only real prerequisite is a strong curiosity and desire to learn. Software reverse engineering integrates several arts: code breaking, puzzle solving, programming, and logical analysis.}
-				\end{itemize}
-			\end{block}
-		\end{frame}
+	\subsection{x86\_64}
 		\begin{frame}
-			\frametitle{When do we use it?}
+			\frametitle{How much is different x86\_64 from x86?}
+			\begin{changemargin}{-0.7cm}{0cm}
 			\begin{itemize}
-				\item{Reversing Application}
-				\item{Security-Related Reversing}
-					\begin{itemize}
-						\item{Malicious Software}
-						\item{Reversing Cryptographic Algorithms}
-						\item{Digital Rights Management}
-						\item{Auditing Program Binaries}
-					\end{itemize}
-				\item{Reversing Software Development}
-					\begin{itemize}
-						\item{Achieving Interoperability with Proprietary Software}
-						\item{Developing Competing Software}
-						\item{Evaluating Software Quality and Robustness}
-					\end{itemize}
-			\end{itemize}			
+				\item{The prefix of  the register is r instead of e so we have (rip, rax etc.)}
+				\item{There are 8 new registers (r8 to r15)}
+				\item{each of them can be consider at 8, 16, 32, 64 bits\\
+				   with $X \in \{8..15\}$ we have }
+				\begin{table}[h]
+					\begin{tabular}{|c!{\vrule width 1pt }c|c|c|c|}
+					\hline
+					bits&8&16&32&64\\
+					\hline
+					reg&rXb&rXw&rXd&rX\\
+					\hline	
+					\end{tabular}
+				\end{table}
+				\item{for better syntax information look at \url{http://www.x86-64.org/documentation/assembly.html}}
+			\end{itemize}
+			\end{changemargin}
+		\end{frame}
+\section{Something more after the syntax}
+	\subsection{Program in memory}
+		\begin{frame}
+			\frametitle{Different Binary File Format}
+				\begin{itemize}
+					\item{\color{red}PE (Portable Executable)\color{black}: This kind of binary file format is used by Microsoft binary executable.}
+					\item{\color{red}ELF\color{black}: This is the common binary format for Unix, Linux, FreeBSD and others}
+					\item{\color{red}Other\color{black}}
+				\end{itemize}
+		\end{frame}
+	
+		\begin{frame}
+			\begin{changemargin}{-1cm}{-1cm}
+				\frametitle{How a program is seen in memory in linux}
+					\begin{table}[l]
+						\resizebox{12.5cm}{3cm}{
+
+						\scalebox{0.9}{
+
+					\begin{tabular}{|l l|}
+						\hlinewd{1pt}
+							\textbf{Executable}&\textbf{Description}\\\hlinewd{1.3pt}
+							.bss&This section holds uninitialized data that contribute to the program's memory image.\\
+							&By definition, the system initializes the data with zeros when the program begins to run.\\\hline
+							.comment&This section holds version control information.\\\hline
+							.data/.data1& These sections hold initialized data that contribute to \\
+							&the program's memory image\\\hline
+							.debug&This section holds information symbolic debugging.\\\hline
+							.text&This section holds the "text," or executable instructions, of a program.\\\hline
+							.init&This section holds executable instructions that contribute to the process initialization code.\\\hline
+							&That is, when a program starts to run, the system arranges to execute the code in this\\
+							&section before calling the main program entry point (called main for C programs).\\
+							\hline
+							.got&This section holds the global offset table.\\
+							\hline
+				
+					\end{tabular}
+					}
+					}
+					\end{table}
+			\end{changemargin}
+		\end{frame}
+		
+		\begin{frame}
+			\begin{changemargin}{-1cm}{-1cm}
+				\frametitle{How a program is seen in memory in windows}
+					\begin{table}[l]
+						\resizebox{12cm}{3cm}{
+
+						\scalebox{0.9}{
+						\begin{tabular}{|l l|}
+							\hlinewd{1pt}
+								\textbf{Executable}&\textbf{Description}\\\hlinewd{1.3pt}
+								.text&Contains the executable code\\\hline
+								.rdata&Holds read-only data that is globally accessible within	\\
+								&the program\\\hline
+				
+								.data&Stores global data accessed throughout the program\\\hline
+								.idata&Sometimes present and stores the import function information;\\
+								& if this section is not present, the import function information\\
+								&is stored in the .rdata section\\\hline
+								.edata&Sometimes present and stores the export function information;\\								      &if this section is not present, the export function information\\
+								& is stored in the .rdata section\\\hline
+								.pdata&Present only in 64-bit executables and stores\\
+								& execption-handling information\\\hline
+								.rsrc&Stores resources needed by the executable\\\hline
+								.reloc&Contains information for relocation of library files\\\hline
+						\end{tabular}
+						}
+						}
+					\end{table}
+			\end{changemargin}
 		\end{frame}
 		\begin{frame}
-			\frametitle{Background of a good Reverser}
+			\frametitle{A General Schema}
+				\begin{figure}
+					\scalebox{0.35}{
+					\includegraphics[width=\textwidth]{images/prog_memory.eps}
+					\label{The important idea that we must have in mind before looking inside a binary file}
+					}
+				\end{figure}
+		\end{frame}				
+
+\subsection{Function and Call Convention}
+		\begin{frame}
+			\frametitle{Function}
+			\begin{itemize}
+				\item{The concept of function in assembly is the same of the common function in almost all the programming languages }
+				\item{Is a piece of code that receive data from the caller a return some value after the elaboration}
+				\item{Differently from all high level languages the way to pass parameters to a function can be done in more than one way}
+				\item{Is different also the way how to call a specific function}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Function, An example}
+				\begin{figure}
+					\scalebox{0.54}{
+					\includegraphics[width=\textwidth]{images/function.eps}
+					\label{A Function Example}
+					}
+				\end{figure}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Call Convention}
+			\begin{itemize}
+				\item{It's the way how a program receives parameters,how a function returns its return value and who cleans the stack}
+				\item{There are different implementation of the Call Convention that dictates exactly where a caller should place any parameters that a function requires}
+				\item{Everything is dipendent by the compiler(gcc/g++, visual studio c++ etc.) and by the high-level language from which the assembly comes from (c, c++, visualbasic and so on) }
+				\item{Let's look at some of those}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{The C Calling Convention}
+			\begin{itemize}
+				\item{It's the default calling convention used by most C compilers for the x86 arch}
+				\item{When a compiler doesn't use this convention we can force it using the modifier \color{red}\_cdecl}
+				\item{It specifies that the \textbf{caller place} parameters to a function on a stack in the right to left order and that the \textbf{caller remove} the parameters from the stack after the called function completes}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{The C Calling Convention example}
+			\begin{figure}
+				\subfloat{\includegraphics[width=7cm]{images/demo_cdecl.eps}}\\
+				\begin{columns}
+					\begin{column}[center]{2.5in}
+						\subfloat{\includegraphics[width=7cm]{images/cdecl_place.eps}}\\
+						\subfloat{\includegraphics[width=7cm]{images/cdecl_place2.eps}}\\
+					\end{column}
+				\end{columns}
+			\end{figure}
+		\end{frame}
+		\begin{frame}
+			\frametitle{The Standard Calling Convention}
+			\begin{itemize}
+				\item{This is the Miscrosoft Calling Convention standard}
+				\item{When a compiler doesn't use this convention we can force it using the modifier \color{red}\_stdcall}
+				\item{Also here the parameters are passed all using only the stack, the difference  is that the called function is responsible for clearing the function parameters from the stack when the function has finished. To do this the function has to know the right number of parameter passed. It's valid only with function with fixed number of parameters so such as printf can't use it.}
+				\begin{figure}
+					\includegraphics[width=7cm]{images/demo_stdcall.eps}\\
+					\includegraphics[width=7cm]{images/clear_stack.eps}
+				\end{figure}	
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{fastcall Convention for x86}
+			\begin{itemize}
+				\item{It's a variation of the stdcall convention, the fastcall  calling convention passes up to two parameters in CPU registers rather than on the program stack.}
+				\item{The Microsoft Visual C/ C++ and GNU gcc/g++ compilers recognize the \color{red}fastcall\color{black} modifier in function declaration.}
+				\item{In this case the first two parameters are passed in the register (ECX and EDX), the remaining parameters are place on the stack in right to left order similar to stdcall.The function is responsible for removing parameters from the stack when they return to their caller.}
+				\begin{figure}
+					\includegraphics[width=6cm]{images/demo_fastcall.eps}\\
+					\includegraphics[width=6cm]{images/fastcall_place.eps}\\
+				\end{figure}
+			\end{itemize}
+		\end{frame}
+
+		\begin{frame}
+			\frametitle{C++ Calling Convention}
+			\begin{itemize}
+				\item{This Call Convention is for non static member function in c++ to male available the \textbf{this} pointer-}
+				\item{The address of the object used to invoke the function must be supplied by the caller and is therefore provided as a parameter when calling nonstatic member functions.}
+				\item{The c++ language standard does not specify how \textbf{this} should be passed to nonstatic member function}
+				\item{So here arise the problem that every c++ compiler does something different from another one}
+				\item{\color{red} LOOK TO THE SPECIFIC COMPILER WHEN YOU REVERSE C++ PROGRAM!!!}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Other Calling Convention}
+			\begin{itemize}
+				\item{A Ton of other convention are implemented...They are often language-, compiler- and CPU-specific.}
+				\item{Actually all the people that write assembly by hand use the own convention...}
+				\item{...Try you to write some little program }
+			\end{itemize}
+		\end{frame}
+\section{Reversing in Practice}
+	\subsection{Knowledge}
+		\begin{frame}
+		\frametitle{Background of a good Reverser}
 			\begin{itemize}
 				\item{Assembly Language}
 				\item{Compilers}
@@ -292,6 +544,7 @@
 				\item{Operative Systems}
 			\end{itemize}
 		\end{frame}
+	\subsection{Tools}
 		\begin{frame}
 			\frametitle{Tools of a good Reverser}
 				\begin{itemize}
@@ -311,28 +564,7 @@
 				\item{SoftICE}
 			\end{itemize}
 		\end{frame}
-
-		\begin{frame}
-			\frametitle{Is it Legal?}
-			\begin{itemize}
-				\item{The Legal debate around reverse engineering has been going on for years}
-				\item{1998 -  Digital Millenium Copyright Act}
-					\begin{itemize}
-						\item{Circumvention of copyright protection systems}
-						\item{The development of circumvention technologies}
-					\end{itemize}
-				\item{Luckily, DMCA makes several exceptions}
-					\begin{itemize}
-						\item{Interoperability}
-						\item{Encryption research}
-						\item{Security testing}
-						\item{Educational institutions and public libraries}
-						\item{Government investigation}
-						\item{Regulation}
-						\item{Protection of privacy}
-					\end{itemize}
-			\end{itemize}
-		\end{frame}
+	\subsection{Avoiding Reversing}
 		\begin{frame}
 			\frametitle{Reverse on Malware and Antireversing Techniques}
 			Today's malware and commercial program use techniques against Reversing
@@ -349,6 +581,16 @@
 					\end{itemize}
 				\item{Anti-Virtual Machine Techniques}
 				\item{Packers and Unpacking}
+			\end{itemize}
+		\end{frame}
+	\subsection{End}
+		\begin{frame}
+			\frametitle{Bibliography}
+			\begin{itemize}
+				\item{The Ida Pro Book 2 Edition }
+				\item{The Shellcoder Handbook}
+				\item{Reverse Engineering Code with IDA Pro}
+				\item{Secrets of Reverse Engineering}
 			\end{itemize}
 		\end{frame}
 	 	\begin{frame}

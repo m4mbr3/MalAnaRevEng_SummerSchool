@@ -2,11 +2,11 @@ Topics of Malware Reverse Engineering
 
 1 Crash course on x86 (AI 80x86 structure register&flags, syntax at6t intel, basic instruction set)  
 
-2 Function and call convenction
+2 Some knowledge about x86_64 (differences with 80x86)
 
-3 Some knowledge about x86_64 (differences with 80x86)
+3 How the program is seen in memory 
 
-4 How the program is seen in memory 
+4 Function and call convenction
 
 5 What we need (with Section for windows tools and linux tools)
 	-IDA PRO (free version is 5.0)
