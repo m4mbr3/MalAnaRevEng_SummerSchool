@@ -1,0 +1,117 @@
+\documentclass[]{beamer}
+% Class options include: notes, notesonly, handout, trans,
+%                        hidesubsections, shadesubsections,
+%                        inrow, blue, red, grey, brown
+
+% Theme for beamer presentation.
+\usepackage{beamerthemesplit} 
+\usepackage{tabularx}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{subfig}
+\makeatletter
+
+\def\hlinewd#1{%
+\noalign{\ifnum0=`}\fi\hrule \@height #1 %
+\futurelet\reserved@a\@xhline}
+\makeatother
+
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}} 
+% Other themes include: beamerthemebars, beamerthemelined, 
+%                       beamerthemetree, beamerthemetreebars  
+\newcommand{\tab}{\hspace*{2em}}
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+  \oldmacro\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+\title{Malware Reverse Engineering Basic Knowledge}    % Enter your title between curly braces
+\author{Andrea Mambretti (mambro007@gmail.com)}        % Enter your name between curly braces
+\institute{Politecnico di Milano}      % Enter your institute name between curly braces
+\date{\today}                    % Enter the date or \today between curly braces
+
+\begin{document}
+
+% Creates title page of slide show using above information
+\begin{frame}
+  \titlepage
+\end{frame}
+\note{Talk for 50 minutes} % Add notes to yourself that will be displayed when
+                           % typeset with the notes or notesonly class options
+
+\section[Outline]{}
+
+% Creates table of contents slide incorporating
+% all \section and \subsection commands
+\begin{frame}
+  \tableofcontents
+\end{frame}
+\section{List of Tool}
+	\subsection{Tool for Windows}
+		\begin{frame}
+			\frametitle{(1) Tools Windows}
+			\begin{itemize}
+				\item{Dependency Walker \url{http://www.dependencywalker.com}}
+				\item{LordPE \url{http://www.woodmann.com/collaborative/tools/index.php/LordPE}}
+				\item{OllyDbg \url{http://www.ollydbg.de}}
+				\item{PDF Tools \url{http://blog.didierstevens.com/programs/pdf-tools/}}
+				\item{PE Explorer \url{https://www.heaventools.com/}}
+				\item{PEiD \url{http://www.peid.info/}}
+				\item{PE view \url{www.magma.ca/~wjr/}}
+				\item{Process Explorer \url{http://www.sysinternals.com/}}
+				\item{Process Hacker \url{http://processhacker.sourceforge.net/}}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{(2) Tools Windos}
+			\begin{itemize}
+				\item{Process Monitor \url{http://www.sysinternal.com}}
+				\item{Regshot \url{http://sourceforge.net/projects/regshot/}}
+				\item{Resource Hacker \url{http://www.angusj.com/resourcehacker/}}
+				\item{Snort \url{http://www.snort.org/}}
+				\item{Strings \url{http://www.sysinternals.com/}}
+				\item{TCPView \url{http://www.sysinternals.com/}}
+				\item{Tor \url{http://torproject.org}}
+				\item{WinDbg \url{http://msdn.microsoft.com/}}
+				\item{Wireshark \url{http://www.wireshark.org/}}
+				\item{UPX \url{http://upx.sourceforge.net/}}
+				\item{netcat \url{http://joncraton.org/media/files/nc111nt.zip}}
+				\item{CFF Explorer \url{www.ntcore.com}}
+				
+			\end{itemize}
+		\end{frame}
+	\subsection{Linux Tool}
+		\begin{frame}
+			\frametitle{Linux Tool}
+			\begin{itemize}
+				\item{string }
+				\item{Assemblatore : \textbf{as -a -o nome\_oggetto.o nome\_sorgente.s}}
+				\item{Linker: \textbf{ld -o nome\_eseguibile nome\_oggetto.o}}
+				\item{objdump}
+				\item{file}
+				\item{gcc}
+				\item{gdb}
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Other Tool}
+			\begin{itemize}
+				\item{VirusTotal \url{http://www.virustotal.com/}}
+				\item{VMware Workstation \url{http://www.vmware.com/}}
+				\item{Some Test Malware \url{http://www.malwareanalysisbook.com}}
+			\end{itemize}	
+		\end{frame}
+
+\end{document}
+
+
+
