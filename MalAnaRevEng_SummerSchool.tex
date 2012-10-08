@@ -221,7 +221,7 @@
 						\begin{tabular}{|c!{\vrule width 1pt}c|c|c| }
 							\hline
 							OperandSize:& 1 byte & 2 bytes& 4 bytes\\	\hlinewd{1.3pt}
-							Other Operand& AX     & DX:AX   & EDX:EAX\\	\hline
+								Other Operand& AL     & AX   & EAX\\	\hline
 							Higher Part of result: & AH & DX & EDX\\		\hline
 							Lower Part of result:  & AL & AX & EAX\\
 							\hline
@@ -372,7 +372,7 @@
 	
 		\begin{frame}
 			\begin{changemargin}{-1cm}{-1cm}
-				\frametitle{How a program is seen in memory in linux}
+				\frametitle{How a program is seen in memory in linux (\color{red} ELF)}
 					\begin{table}[l]
 						\resizebox{12.5cm}{3cm}{
 
@@ -404,7 +404,7 @@
 		
 		\begin{frame}
 			\begin{changemargin}{-1cm}{-1cm}
-				\frametitle{How a program is seen in memory in windows}
+				\frametitle{How a program is seen in memory in windows (\color{red} PE)}
 					\begin{table}[l]
 						\resizebox{12cm}{3cm}{
 
@@ -555,14 +555,102 @@
 				\end{itemize}
 		\end{frame}
 		\begin{frame}
-			\frametitle{Some Common Reversing Tools}
-			\begin{itemize}
-				\item{IDA Pro}
-				\item{OllyDbg}
-				\item{WinDbg}
-				\item{PEBrowse Professional Interactive}
-				\item{SoftICE}
-			\end{itemize}
+			\frametitle{IDA Pro}
+				\begin{itemize}
+					\item{\textbf{Type:} Disassembler}
+					\item{\textbf{Description:} IDApro, without doubts, is the most powerful reverse tool. I will try to resume all the properties of it. It has  three view of the code (graph, text and hex view), a smart version of strings that filter the output to allow a better look at it, two version of the toolbar (advanced and basic), either auto finds data structures inside the code or you can specify it (the same for enums), import/export windows, hexrail extension to get a c-like code of some function, you can specify more than one external debugger to debug your program and much more! }	
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{OllyDbg}
+				\begin{itemize}
+					\item{\textbf{Type:} Disassembler and Debugger}
+					\item{\textbf{Description:} OllyDbg is a well-known Windows debugger, is really useful on binary code analysis. With OllyDbg is very simple patch the binary to get the desidered flaw of the program. It's really intuitive and you can get it for free online.}
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{WinDbg}
+				\begin{itemize}
+					\item{\textbf{Type:} Kernel Debugger}
+					\item{\textbf{Description:} This tool is provided by Microsoft, we can use it to debug drivers, applications and services on Windows systems. }
+				\end{itemize}
+		\end{frame}	
+		\begin{frame}
+			\frametitle{PEview}
+				\begin{itemize}
+					\item{\textbf{Type:} Portable Executable(PE) viewer}
+					\item{\textbf{Description:} This program is used actually to get a first idea of what is going on. It allows us to see inside the header of the file and understand things such as it's packed or not, it has the resource section with something bad, which are the imports (that's equal to say "What it will try to do in theory on our system")}
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Wireshark}
+				\begin{itemize}
+					\item{\textbf{Type:} Network protocol analyzer}
+					\item{\textbf{Description:} WS is a traffic sniffer with a huge set of protocol filter that gives us the full control of what goes on the network. Why do we need it? Actually the reverse engineering process is joint with a dynamic analysis of the malware that maybe uses the network to communicate with remote servers or other bad things. Using wireshark, we can catch and look into every packet that flows in the network. }
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Strings}
+				\begin{itemize}
+					\item{\textbf{Type:} Binary analyzer }
+					\item{\textbf{Description:} Strings is a very small program but it can provide us very important information. It looks inside the binary and prints all the printable charaters on the screen. The strings of the binary can be very usuful to understand what is the binary. NB: Ok malware writers are not stupid they will try to put wrong strings inside but if you look at things such as "9.23.111.43" \textbf{maybe} you can suppose that is a ipv4 address and look at it } 
+				\end{itemize}			
+		\end{frame}
+		\begin{frame}
+			\frametitle{Snort}
+				\begin{itemize}		
+					\item{\textbf{Type:} Intrusion detection system}
+					\item{\textbf{Description:} It's an open source network intrusion prevention and detection system. We can use it to take under control some event during the execution of a malware. It will give us fast information about new event coming from the network such as a botmaster that send something to our infected test-machine }
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Tor}
+				\begin{itemize}
+					\item{\textbf{Type:} Proxy for Anonymity}
+					\item{\textbf{Description:} Tor allows a ton of things, everyone is strictly connected to the \textbf{Anonymity}. The program is a simple proxy that get you access to the "hidden internet". Tor is so anonymous that bad guys, of course, use it to do bad things. Some malware works using tor so we need it to try to undestand its behaviour inside the hidden internet.}
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{UPX (Ultimate Packer for Executable)}
+				\begin{itemize}
+					\item{\textbf{Type:} Packer/Unpacker}
+					\item{\textbf{Description:} With this program we can detect and unpack malware that use upx packing to avoid antivirus detection. It works on a huge collection of binary format and work on a lot of OS } 
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Regshot}
+				\begin{itemize}
+					\item{\textbf{Type:} Windows register analyzer}
+					\item{\textbf{Description:} This tool is designed to make a really simple thing. It allows you to do a snapshot of a the whole set of registers in two different moment and it gives us the differences between snapshot one and two. The result can be used to understand which register are touched by a malware}
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Process Monitor}
+				\begin{itemize}
+					\item{\textbf{Type:} Monitor }
+					\item{\textbf{Description:} Process Monitor is an advanced monitoring tool for Windows that shows real-time file system, Registry and process/thread activity. It combines the features of two legacy Sysinternals utilities, Filemon and Regmon, and adds an extensive list of enhancements including rich and non-destructive filtering, comprehensive event properties such session IDs and user names, reliable process information, full thread stacks with integrated symbol support for each operation, simultaneous logging to a file, and much more. Its uniquely powerful features will make Process Monitor a core utility in your system troubleshooting and malware hunting toolkit.}
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Process Explorer}
+				\begin{itemize}
+					\item{\textbf{Type:} Monitor }
+					\item{\textbf{Description:} This Program gives us information about either file or directory that are opened by a specific process. The unique capabilities of Process Explorer make it useful for tracking down DLL-version problems or handle leaks, and provide insight into the way Windows and applications work. }
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Process Hacker}
+				\begin{itemize}
+					\item{\textbf{Type:} Monitor}
+					\item{\textbf{Description:} Process Hacker is a free and open source process viewer. This multi-purpose tool will assist you with debugging, malware detection and system monitoring. It includes powerful process termination, memory viewing/editing and other unique and specialized features.}
+				\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{Resource Hacker}
+				\begin{itemize}
+					\item{\textbf{Type:} Resource section manager}
+					\item{\textbf{Description:} Resource HackerTM is a freeware utility to view, modify, rename, add, delete and extract resources in 32bit \& 64bit Windows executables and resource files (*.res). It incorporates an internal resource script compiler and decompiler and works on all (Win95 - Win7) Windows operating systems. }
+				\end{itemize}
 		\end{frame}
 	\subsection{Avoiding Reversing}
 		\begin{frame}
@@ -605,7 +693,6 @@
 			\frametitle{End}
 			\begin{itemize}
 				\item{Thanks Folk...Questions?}
-				\item{So now one practical example}
 			\end{itemize}
 		\end{frame}
 %\begin{frame}
