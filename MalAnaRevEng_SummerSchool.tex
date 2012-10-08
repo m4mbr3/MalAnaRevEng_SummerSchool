@@ -34,7 +34,7 @@
 \renewcommand*\insertshorttitle{%
   \oldmacro\hfill%
   \insertframenumber\,/\,\inserttotalframenumber}
-\title{Malware Reverse Engineering Basic Knowledge}    % Enter your title between curly braces
+\title{Malware Reverse Engineering}    % Enter your title between curly braces
 \author{Andrea Mambretti (mambro007@gmail.com)}        % Enter your name between curly braces
 \institute{Politecnico di Milano}      % Enter your institute name between curly braces
 \date{\today}                    % Enter the date or \today between curly braces
@@ -55,16 +55,16 @@
 \begin{frame}
   \tableofcontents
 \end{frame}
-\section {Crash course on Assembly Language }
-	\subsection{An overview on the common 32-bit Intel Architecture (IA)}
+\section {Crash course on Assembly Language}
+	\subsection{Overview on the common 32-bit Intel Architecture (IA)}
 		\begin{frame}
 			\frametitle{(1) How is the IA made?}
 			\begin{itemize}
-				\item{The processor has 32 bits internal registers to manage and to execute operations on data\newline They are EAX,EBX,ECX,EDX,ESI,EDI,EBP,EIP and ESP }
-				\item{Among them we identify EAX,EBX,ECX,EDX that are used for general purpose}
+				\item{The processor has 32 bits internal registers to manage and execute operations on data\newline They are EAX, EBX, ECX, EDX, ESI, EDI, EBP, EIP and ESP }
+				\item{Among them we identify EAX, EBX, ECX, EDX are for general purpose}
 				\item{EBP (BP = base pointer) and ESP (SP = stack pointer) are the stack bounds }
 				\item{EDI and ESI are extra-registers}
-				\item{EIP (IP = instruction pointer) is the register that contains the address of the next instruction has to be execute}
+				\item{EIP (IP = instruction pointer) is the register that contains the address of the next instruction}
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
@@ -78,7 +78,7 @@
 				\end{column}
 				\begin{column}[right]{2.5in}
 					\begin{itemize}
-						\item{The register name system is a porting from 16-bit IA where the registers were called AX,BX and so on.\newline We can use it also in 32-bit world calling them without the "E" (extended)\newline There's also the possibility to use AX,BX,CX,DX such as 8-bit registers for example we can use AX as AH and AL that mean higher and lower 8 bits of AX}
+							\item{The register name system is a porting from 16-bit IA where the registers were called AX, BX and so on.\newline "E" means extended. Without it we consider the corrisponding 16-bit register\newline There's also the possibility to use AX,BX,CX,DX such as 8-bit registers. For example we can use AX as AH and AL that mean higher and lower 8 bits of AX}
 					\end{itemize}
 				\end{column}
 			\end{columns}
@@ -94,19 +94,19 @@
 			\frametitle{(2) What about EFLAGS?}
 			\begin{itemize}
 				\item{It's another 32-bit register}
-				\item{Only 8 bits on 32 are of interest to us. The others are either for the kernel mode function or  are of little interest for programmer}
+				\item{Only 8 bits out of 32 are of interest for us. The others are either for the kernel mode function or  are of little interest for programmers}
 				\item{The 8 bits are called flags. We consider them singularly. They are boolean (true/false) }
-				\item{The meaning of each bit is different. They represent Overflow, Direction, Interrupt Disable, Sign, Zero, Auxiliary Carry, Parity and Carry Flags}
-				\item{For each instruction executed by the processor they change and represent the information about the last instruction executed. They are VERY important for the control flow of the program }				
+				\item{The meaning of each bit is different. They represent overflow, direction, interrupt disable, sign, zero, auxiliary carry, parity and carry flags}
+				\item{Since they represent information about the instruction last executed, they change at every execution step. They are VERY important for the control flow of the program }				
 			\end{itemize}
 		\end{frame}
-	\subsection{Syntaxes overview}
+	\subsection{Overview on different syntaxes}
 		\begin{frame}
 			\frametitle{Syntax}
 			\begin{itemize}
-				\item{In the assembly world we can find two main syntax the AT\&T and the Intel}
-				\item{AT\&T is used by all the UNIX program (gdb)}
-				\item{Intel syntax is used by Microsoft program (IDApro and others)}
+				\item{In the assembly world we can find two main syntaxes: the AT\&T and the Intel}
+				\item{AT\&T syntax is used by all UNIX program (e.g. gdb)}
+				\item{Intel syntax is used by Microsoft programs (IDApro and others)}
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
@@ -117,33 +117,33 @@
 				\item{Intel: \centerline{ mov eax, 0h}}
 				\item{Comments:} 
 				\begin{itemize}
-					\item{As you can see in AT\&T syntax the destination is the second operand instead of the first as Intel syntax is}
-					\item{In the AT\&T the register are denoted with \% and the immediate/costant with \$. In the Intel syntax they are not used. }
+					\item{As you can see in AT\&T syntax the destination is the second operand instead as in the Intel syntax}
+					\item{In the AT\&T syntax the register are denoted with \% and the immediate/costant with \$. In the Intel syntax these tokens are not used. }
 				\end{itemize}
 			\end{itemize}
 		\end{frame}
 		\begin{frame}
 			\frametitle{(2) Differences in the notation}
 			\begin{itemize}
-				\item{Consider this other operation:\newline\centerline {"move the value 0 to the address contained in EBX+4"}}
+				\item{Consider this new operation:\newline\centerline {"move the value 0 to the address contained in EBX+4"}}
 				\item{AT\&T: \centerline{ mov \$0x0,0x4(\%ebx)}}
 				\item{Intel: \centerline{ mov [ebx+4h],0h }}
 				\item{Comments:}
 				\begin{itemize}
-					\item{This case wants figure out how is done the deferentiation in assembly}
-					\item{In AT\&T we use the parenthesis. In the Intel syntax we have to use square brackets}
-					\item{The way to manage the offset is another syntax difference in the first case we have to put it out of the parenthesis in the second one inside the square brackets }
+					\item{This case shows how  the deferentiation is done in assembly}
+					\item{In AT\&T we use parenthesis. In the Intel syntax we have to use square brackets}
+					\item{The way to manage the offset is another syntax difference. In the first case we have to put it out of the parenthesis in the second one inside the square brackets }
 				\end{itemize}
 			\end{itemize}
 		\end{frame}
-	\subsection{Let's look to the basic instructions}
+	\subsection{Basic Instructions}
 		\begin{frame}
-			\frametitle{(1) Basic Instructions overview}
+			\frametitle{(1) Basic instructions overview}
 				\begin{itemize}
-					\item{Every processor has a very huge number of instructions to execute (see Intel Manual\footnote{\url{http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html}})}
-					\item{A subset of the whole instructions set is usually dipendent by the considered processor}
-					\item{We will focus on the other subset of instructions that is common among all the processors}
-					\item{We will use the Intel syntax to see them because is the same syntax used in IDApro by default}
+					\item{Every processor has a huge instruction set (see Intel Manual\footnote{\url{http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html}})}
+					\item{A subset of the whole instructio set is usually processor dipendent}
+					\item{We will focus on the other subset of instructions that is common among the processors}
+					\item{We will use the Intel syntax as it is the same syntax used in IDApro by default}
 				\end{itemize}
 		\end{frame}
 		\begin{frame}
@@ -359,8 +359,8 @@
 			\end{itemize}
 			\end{changemargin}
 		\end{frame}
-\section{Something more after the syntax}
-	\subsection{Program in memory}
+\section{Something more}
+	\subsection{Program layout in memory}
 		\begin{frame}
 			\frametitle{Different Binary File Format}
 				\begin{itemize}
@@ -372,7 +372,7 @@
 	
 		\begin{frame}
 			\begin{changemargin}{-1cm}{-1cm}
-				\frametitle{How a program is seen in memory in linux (\color{red} ELF)}
+				\frametitle{How a program is seen in memory in linux (\color{red} ELF\color{white})}
 					\begin{table}[l]
 						\resizebox{12.5cm}{3cm}{
 
@@ -404,7 +404,7 @@
 		
 		\begin{frame}
 			\begin{changemargin}{-1cm}{-1cm}
-				\frametitle{How a program is seen in memory in windows (\color{red} PE)}
+				\frametitle{How a program is seen in memory in windows (\color{red} PE\color{white})}
 					\begin{table}[l]
 						\resizebox{12cm}{3cm}{
 
@@ -442,7 +442,7 @@
 				\end{figure}
 		\end{frame}				
 
-\subsection{Function and Call Convention}
+\subsection{Function and call convention}
 		\begin{frame}
 			\frametitle{Function}
 			\begin{itemize}
@@ -509,8 +509,8 @@
 				\item{The Microsoft Visual C/ C++ and GNU gcc/g++ compilers recognize the \color{red}fastcall\color{black} modifier in function declaration.}
 				\item{In this case the first two parameters are passed in the register (ECX and EDX), the remaining parameters are place on the stack in right to left order similar to stdcall.The function is responsible for removing parameters from the stack when they return to their caller.}
 				\begin{figure}
-					\includegraphics[width=6cm]{images/demo_fastcall.eps}\\
-					\includegraphics[width=6cm]{images/fastcall_place.eps}\\
+					\includegraphics[width=7cm]{images/demo_fastcall.eps}\\
+					\includegraphics[width=7cm]{images/fastcall_place.eps}\\
 				\end{figure}
 			\end{itemize}
 		\end{frame}
@@ -533,8 +533,8 @@
 				\item{...Try you to write some little program }
 			\end{itemize}
 		\end{frame}
-\section{Reversing in Practice}
-	\subsection{Knowledge}
+\section{Reversing in practice}
+	\subsection{Things to know}
 		\begin{frame}
 		\frametitle{Background of a good Reverser}
 			\begin{itemize}
@@ -544,7 +544,7 @@
 				\item{Operative Systems}
 			\end{itemize}
 		\end{frame}
-	\subsection{Tools}
+	\subsection{Available tools}
 		\begin{frame}
 			\frametitle{Tools of a good Reverser}
 				\begin{itemize}
@@ -652,7 +652,7 @@
 					\item{\textbf{Description:} Resource HackerTM is a freeware utility to view, modify, rename, add, delete and extract resources in 32bit \& 64bit Windows executables and resource files (*.res). It incorporates an internal resource script compiler and decompiler and works on all (Win95 - Win7) Windows operating systems. }
 				\end{itemize}
 		\end{frame}
-	\subsection{Avoiding Reversing}
+	\subsection{Avoid reversing: how to}
 		\begin{frame}
 			\frametitle{Reverse on Malware and Antireversing Techniques}
 			Today's malware and commercial program use techniques against Reversing
@@ -671,7 +671,7 @@
 				\item{Packers and Unpacking}
 			\end{itemize}
 		\end{frame}
-	\subsection{End}
+	\subsection{Conclusion}
 		\begin{frame}
 			\frametitle{Bibliography}
 			\begin{itemize}
